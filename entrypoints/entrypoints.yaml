@@ -1,7 +1,7 @@
 entrypoints:
-  id: purchase
-  type: http-handler
-  flowId: purchase-flow
-  config:
-    method: POST
-    path: /purchase
+  - id: purchase
+    type: http-handler
+    flowId: purchase-flow
+    config:
+      method: POST
+      path: /purchase

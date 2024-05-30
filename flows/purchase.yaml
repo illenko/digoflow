@@ -1,9 +1,11 @@
 id: purchase-flow
 name: Purchase Flow
 
+## Define the input schema
+## This schema will be used to validate the incoming data
 input:
   type: json
-  body:
+  fields:
     - name: orderId
       type: STRING
     - name: description
@@ -30,7 +32,7 @@ tasks:
       - from: input.orderId
         to: orderId
       - from: input.description
-        to: orderId
+        to: description
       - from: input.resultUrl
         to: resultUrl
       - from: input.amount.value
@@ -44,17 +46,17 @@ output:
   type: json
   body:
     - name: orderId
-      value: outputs.to-transaction-record.orderId
+      value: output.to-transaction-record.orderId
     - name: description
-      value: outputs.to-transaction-record.description
+      value: output.to-transaction-record.resultUrl
     - name: resultUrl
-      value: outputs.to-transaction-record.resultUrl
+      value: output.to-transaction-record.resultUrl
     - name: amount
-      value: outputs.to-transaction-record.amount_value
+      value: output.to-transaction-record.amount_value
     - name: currency
-      value: outputs.to-transaction-record.amount_currency
+      value: output.to-transaction-record.amount_currency
     - name: payer_instrument_type
-      value: outputs.to-transaction-record.payer_instrument_type
+      value: output.to-transaction-record.payer_instrument_type
     - name: payerDetails.id
       value: input.payerDetails.id
     - name: payerDetails.name.firstName
