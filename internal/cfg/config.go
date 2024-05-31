@@ -8,27 +8,33 @@ import (
 )
 
 func LoadApp(flowsDir string) (model.App, error) {
-	data, err := os.ReadFile(flowsDir + "/purchase.yaml")
-
-	if err != nil {
-		return model.App{}, err
-	}
-
-	var purchaseFlow model.Flow
-
-	err = yaml.Unmarshal(data, &purchaseFlow)
-
+	files, err := os.ReadDir(flowsDir)
 	if err != nil {
 		return model.App{}, err
 	}
 
 	flows := make(map[string]model.Flow)
-	flows[purchaseFlow.ID] = purchaseFlow
+
+	for _, file := range files {
+		if !file.IsDir() {
+			data, err := os.ReadFile(flowsDir + "/" + file.Name())
+			if err != nil {
+				return model.App{}, err
+			}
+
+			var flow model.Flow
+			err = yaml.Unmarshal(data, &flow)
+			if err != nil {
+				return model.App{}, err
+			}
+
+			flows[flow.ID] = flow
+		}
+	}
 
 	app := model.App{
 		Flows: flows,
 	}
 
 	return app, nil
-
 }

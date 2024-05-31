@@ -1,0 +1,19 @@
+id: purchase-status
+name: Purchase Status Flow
+
+entrypoint:
+    type: http-handler
+    config:
+      method: GET
+      path: /purchase/:orderId
+
+input:
+  path-variables:
+    - name: orderId
+      type: string
+  query-parameters:
+    - name: merchantId
+      type: string
+  headers:
+    - name: x-api-key
+      type: string

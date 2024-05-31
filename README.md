@@ -1,5 +1,7 @@
+### POST /purchase - Create a new purchase
+
 ```shell
-curl --location 'localhost:8080/purchase/123?merchantId=ik' \
+curl --location 'localhost:8080/purchase' \
 --header 'x-api-key: test-x-api-key' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -19,4 +21,11 @@ curl --location 'localhost:8080/purchase/123?merchantId=ik' \
     }
   }
 }'
+```
+
+### GET /purchase/{id} - Get purchase by id
+
+```shell
+curl --location 'localhost:8080/purchase/123' \
+--header 'x-api-key: test-key'
 ```

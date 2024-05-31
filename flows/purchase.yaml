@@ -1,19 +1,13 @@
-id: purchase-flow
+id: purchase
 name: Purchase Flow
 
 entrypoint:
     type: http-handler
     config:
       method: POST
-      path: /purchase/:orderId
+      path: /purchase
 
 input:
-  path-variables:
-    - name: orderId
-      type: string
-  query-parameters:
-    - name: merchantId
-      type: string
   headers:
     - name: x-api-key
       type: string
@@ -38,3 +32,12 @@ input:
         type: string
       - name: payer.name.lastName
         type: string
+
+
+tasks:
+  - id: log-smth
+    type: custom
+    input:
+      - name: message-to-print
+        type: string
+        value: "{{ input.body.description }}"
