@@ -1,65 +1,40 @@
 id: purchase-flow
 name: Purchase Flow
 
-## Define the input schema
-## This schema will be used to validate the incoming data
-input:
-  type: json
-  fields:
-    - name: orderId
-      type: STRING
-    - name: description
-      type: STRING
-    - name: resultUrl
-      type: STRING
-    - name: amount.value
-      type: FLOAT
-    - name: amount.currency
-      type: STRING
-    - name: payerInstrument.type
-      type: STRING
-    - name: payerDetails.id
-      type: STRING
-    - name: payerDetails.name.firstName
-      type: STRING
-    - name: payerDetails.name.lastName
-      type: STRING
-
-tasks:
-  - id: to-transaction-record
-    type: mapper
+entrypoint:
+    type: http-handler
     config:
-      - from: input.orderId
-        to: orderId
-      - from: input.description
-        to: description
-      - from: input.resultUrl
-        to: resultUrl
-      - from: input.amount.value
-        to: amount_value
-      - from: input.amount.currency
-        to: amount_currency
-      - from: input.payerInstrument.type
-        to: payer_instrument_type
+      method: POST
+      path: /purchase/:orderId
 
-output:
-  type: json
-  body:
+input:
+  path-variables:
     - name: orderId
-      value: output.to-transaction-record.orderId
-    - name: description
-      value: output.to-transaction-record.resultUrl
-    - name: resultUrl
-      value: output.to-transaction-record.resultUrl
-    - name: amount
-      value: output.to-transaction-record.amount_value
-    - name: currency
-      value: output.to-transaction-record.amount_currency
-    - name: payer_instrument_type
-      value: output.to-transaction-record.payer_instrument_type
-    - name: payerDetails.id
-      value: input.payerDetails.id
-    - name: payerDetails.name.firstName
-      value: input.payerDetails.name.firstName
-    - name: payerDetails.name.lastName
-      value: input.payerDetails.name.lastName
+      type: string
+  query-parameters:
+    - name: merchantId
+      type: string
+  headers:
+    - name: x-api-key
+      type: string
+  body: 
+    type: json
+    fields:
+      - name: id
+        type: string
+      - name: description
+        type: string
+      - name: resultUrl
+        type: string
+      - name: amount.value
+        type: float
+      - name: amount.currency
+        type: string
+      - name: card
+        type: string
+      - name: payer.id
+        type: string
+      - name: payer.name.firstName
+        type: string
+      - name: payer.name.lastName
+        type: string

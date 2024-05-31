@@ -1,13 +1,14 @@
 package cfg
 
 import (
+	"os"
+
 	"github.com/illenko/digoflow-protorype/internal/model"
 	"gopkg.in/yaml.v2"
-	"os"
 )
 
-func LoadConfig() (model.App, error) {
-	data, err := os.ReadFile("flows/purchase.yaml")
+func LoadApp(flowsDir string) (model.App, error) {
+	data, err := os.ReadFile(flowsDir + "/purchase.yaml")
 
 	if err != nil {
 		return model.App{}, err
@@ -21,26 +22,11 @@ func LoadConfig() (model.App, error) {
 		return model.App{}, err
 	}
 
-	appData, err := os.ReadFile("entrypoints/entrypoints.yaml")
-
-	if err != nil {
-		return model.App{}, err
-	}
-
-	var entrypoints model.Entrypoints
-
-	err = yaml.Unmarshal(appData, &entrypoints)
-
-	if err != nil {
-		return model.App{}, err
-	}
-
 	flows := make(map[string]model.Flow)
 	flows[purchaseFlow.ID] = purchaseFlow
 
 	app := model.App{
-		Entrypoints: entrypoints.Values,
-		Flows:       flows,
+		Flows: flows,
 	}
 
 	return app, nil
