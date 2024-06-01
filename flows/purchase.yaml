@@ -54,4 +54,3 @@ tasks:
       - name: message-to-print2
         type: string
         value: This is a hardcoded description
-  - id:

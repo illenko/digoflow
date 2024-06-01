@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/illenko/digoflow-protorype/internal/component/task"
-
 	"github.com/illenko/digoflow-protorype/internal/expression"
 )
 
