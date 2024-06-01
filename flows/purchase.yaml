@@ -35,9 +35,23 @@ input:
 
 
 tasks:
-  - id: log-smth
+  - id: use-default-log
+    type: log
+    input:
+      - name: message-to-print
+        type: string
+        value: "This is a description from input: {{ input.body.description }}"
+      - name: message-to-print2
+        type: string
+        value: This is a hardcoded description
+  - id: use-custom-log
+    name: custom-log
     type: custom
     input:
       - name: message-to-print
         type: string
-        value: "{{ input.body.description }}"
+        value: This is a description from input {{ input.body.description }}
+      - name: message-to-print2
+        type: string
+        value: This is a hardcoded description
+  - id:

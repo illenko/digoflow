@@ -1,4 +1,4 @@
-package model
+package component
 
 type Entrypoint struct {
 	Type   string            `yaml:"type"`
