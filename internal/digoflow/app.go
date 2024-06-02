@@ -13,9 +13,8 @@ import (
 )
 
 type App struct {
-	Flows        map[string]component.Flow
-	BuiltInTasks map[string]task.ExecutionTask // type -> ExecutionTask
-	CustomTasks  map[string]task.ExecutionTask // name -> ExecutionTask
+	Flows map[string]component.Flow
+	Tasks map[string]task.ExecutionTask // type -> ExecutionTask
 }
 
 func NewApp(flowsDir string) (*App, error) {
@@ -26,10 +25,7 @@ func NewApp(flowsDir string) (*App, error) {
 
 	app := App{
 		Flows: make(map[string]component.Flow),
-		BuiltInTasks: map[string]task.ExecutionTask{
-			"log": task.Log,
-		},
-		CustomTasks: make(map[string]task.ExecutionTask),
+		Tasks: builtInTasks(),
 	}
 
 	for _, file := range files {
@@ -52,12 +48,19 @@ func NewApp(flowsDir string) (*App, error) {
 	return &app, nil
 }
 
+func builtInTasks() map[string]task.ExecutionTask {
+	return map[string]task.ExecutionTask{
+		"digoflow.log":         task.Log,
+		"digoflow.httpRequest": task.HTTPRequest,
+	}
+}
+
 func (a *App) RegisterFlow(flow component.Flow) {
 	a.Flows[flow.ID] = flow
 }
 
-func (a *App) RegisterCustomTask(taskType string, task task.ExecutionTask) {
-	a.CustomTasks[taskType] = task
+func (a *App) RegisterTask(taskType string, task task.ExecutionTask) {
+	a.Tasks[taskType] = task
 }
 
 func (a *App) Start() error {
@@ -106,14 +109,7 @@ func (a *App) registerFlows(g *gin.Engine) ([]string, error) {
 
 func (a *App) registerTasks(f *component.Flow) error {
 	for _, tc := range f.TaskConfigs {
-		var t task.ExecutionTask
-		var ok bool
-
-		if tc.Type == "custom" {
-			t, ok = a.CustomTasks[tc.ID]
-		} else {
-			t, ok = a.BuiltInTasks[tc.Type]
-		}
+		t, ok := a.Tasks[tc.Type]
 
 		if !ok {
 			return fmt.Errorf("task not found: %s", tc.ID)

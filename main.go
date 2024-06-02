@@ -3,9 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/illenko/digoflow-protorype/internal/digoflow"
-
 	"github.com/illenko/digoflow-protorype/internal/component/task"
+	"github.com/illenko/digoflow-protorype/internal/digoflow"
 )
 
 func main() {
@@ -17,7 +16,7 @@ func main() {
 		return
 	}
 
-	app.RegisterCustomTask("use-custom-log", logTask)
+	app.RegisterTask("custom-log", logTask)
 
 	err = app.Start()
 

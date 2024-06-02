@@ -18,25 +18,24 @@ input:
         type: string
       - name: description
         type: string
-      - name: resultUrl
-        type: string
-      - name: amount.value
+      - name: amount
         type: float
-      - name: amount.currency
-        type: string
       - name: card
         type: string
       - name: payer.id
         type: string
-      - name: payer.name.firstName
+      - name: payer.name.first
         type: string
-      - name: payer.name.lastName
+      - name: payer.name.last
         type: string
-
+      - name: paymentSystem.url
+        type: string
+      - name: paymentSystem.apiKey
+        type: string
 
 tasks:
-  - id: use-default-log
-    type: log
+  - id: log-some-data
+    type: digoflow.log
     input:
       - name: message-to-print
         type: string
@@ -44,13 +43,33 @@ tasks:
       - name: message-to-print2
         type: string
         value: This is a hardcoded description
+
   - id: use-custom-log
     name: custom-log
-    type: custom
+    type: custom-log
     input:
       - name: message-to-print
         type: string
-        value: This is a description from input {{ input.body.description }}
-      - name: message-to-print2
+        value: "{{ input.body.payer.name.first }}"
+
+  - id: call-to-payment-system
+    type: digoflow.httpRequest
+    input:
+      - name: uri
         type: string
-        value: This is a hardcoded description
+        value: "{{ input.body.paymentSystem.url }}/Payment"
+      - name: method
+        type: string
+        value: POST
+      - name: header.x-api-key
+        type: string
+        value: "Authorization: {{ input.body.paymentSystem.apiKey }}"
+      - name: body.card
+        type: string
+        value: "{{ input.body.card }}"
+      - name: body.payer
+        type: string
+        value: "{{ input.body.payer.name.first }} {{ input.body.payer.name.last }}"
+      - name: body.amount
+        type: float
+        value: "{{ input.body.amount }}"

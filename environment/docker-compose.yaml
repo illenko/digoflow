@@ -1,0 +1,9 @@
+services:
+
+  mock-server:
+    image: wiremock/wiremock:3.5.4
+    container_name: mock-server
+    volumes:
+      - ./wiremock:/home/wiremock
+    ports:
+      - "8000:8080"

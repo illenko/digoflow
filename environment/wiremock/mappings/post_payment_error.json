@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathTemplate": "/PaymentError"
+  },
+  "response": {
+    "status": 400,
+    "jsonBody": {
+      "error": "failed",
+      "status": "Bad Request"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

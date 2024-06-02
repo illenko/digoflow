@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathTemplate": "/Payment"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "orderId": "123456",
+      "status": "success"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -20,7 +20,7 @@ func ExecuteTasks(f Flow, e *Execution) (task.Output, error) {
 		}
 
 		for k, v := range output {
-			e.Values["outputs."+t.ID+"."+k] = v
+			e.Values["output."+t.ID+"."+k] = v
 		}
 	}
 

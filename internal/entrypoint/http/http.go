@@ -47,18 +47,18 @@ func handleRequest(f component.Flow, body bool) gin.HandlerFunc {
 			return
 		}
 
-		toResponse(c, output)
+		toResponse(c, output, &e)
 	}
 }
 
-func toResponse(c *gin.Context, output task.Output) {
+func toResponse(c *gin.Context, output task.Output, e *component.Execution) {
 	jsonObj := gabs.New()
 
 	for k, v := range output {
 		_, _ = jsonObj.SetP(v, k)
 	}
 
-	c.JSON(http.StatusOK, jsonObj.Data())
+	c.JSON(http.StatusOK, e)
 }
 
 func handlePathVariables(c *gin.Context, f component.Flow, e *component.Execution) {

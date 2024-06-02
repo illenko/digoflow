@@ -5,6 +5,7 @@ go 1.22.3
 require (
 	github.com/Jeffail/gabs/v2 v2.7.0
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-resty/resty/v2 v2.13.1
 	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.9.0
 	gopkg.in/yaml.v2 v2.4.0
