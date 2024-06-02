@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/illenko/digoflow-protorype/internal/digoflow"
 	"github.com/illenko/digoflow-protorype/internal/task"
 )
@@ -15,7 +16,7 @@ func main() {
 		return
 	}
 
-	app.RegisterTask("custom-log", logTask)
+	app.RegisterTask("uuidGenerator", uuidGenerator)
 
 	err = app.Start()
 
@@ -25,11 +26,6 @@ func main() {
 	}
 }
 
-func logTask(values task.Input) (task.Output, error) {
-	fmt.Printf("Message from custom log task: %s\n", values["message-to-print"])
-
-	output := map[string]any{}
-	output["message"] = fmt.Sprintf("Hello from custom log task with message: %s", values["message-to-print"])
-
-	return output, nil
+func uuidGenerator(_ task.Input) (task.Output, error) {
+	return task.Output{"id": uuid.New().String()}, nil
 }

@@ -2,10 +2,10 @@ id: purchase
 name: Purchase Flow
 
 entrypoint:
-    type: http-handler
-    config:
-      method: POST
-      path: /purchase
+  type: http-handler
+  config:
+    method: POST
+    path: /purchase
 
 input:
   headers:
@@ -34,25 +34,17 @@ input:
         type: string
 
 tasks:
-  - id: log-some-data
+  - id: logDescription
     type: digoflow.log
     input:
-      - name: message-to-print
+      - name: description
         type: string
         value: "This is a description from input: {{ input.body.description }}"
-      - name: message-to-print2
-        type: string
-        value: This is a hardcoded description
 
-  - id: use-custom-log
-    name: custom-log
-    type: custom-log
-    input:
-      - name: message-to-print
-        type: string
-        value: "{{ input.body.payer.name.first }}"
+  - id: generateOrderId
+    type: uuidGenerator
 
-  - id: call-to-payment-system
+  - id: callToPaymentSystem
     type: digoflow.httpRequest
     input:
       - name: uri
@@ -64,6 +56,9 @@ tasks:
       - name: header.x-api-key
         type: string
         value: "Authorization: {{ input.body.paymentSystem.apiKey }}"
+      - name: body.id
+        type: string
+        value: "{{ output.generateOrderId.id }}"
       - name: body.card
         type: string
         value: "{{ input.body.card }}"
