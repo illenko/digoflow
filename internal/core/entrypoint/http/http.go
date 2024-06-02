@@ -2,9 +2,10 @@ package http
 
 import (
 	"fmt"
-	"github.com/illenko/digoflow-protorype/internal/task"
 	"io"
 	"net/http"
+
+	"github.com/illenko/digoflow-protorype/internal/task"
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/gin-gonic/gin"
@@ -106,10 +107,15 @@ func handleJSONBody(c *gin.Context, f core.Flow, e *core.Execution) {
 	}
 
 	for _, i := range f.Input.Body.Fields {
-		if i.Type == "float" {
-			e.Values["input.body."+i.Name] = bodyParsed.Path(i.Name).Data().(float64)
-		} else if i.Type == "string" {
-			e.Values["input.body."+i.Name] = bodyParsed.Path(i.Name).Data().(string)
+		value, err := core.ConvertToType(i.Type, bodyParsed.Path(i.Name).Data())
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Wrong request body format",
+			})
+			return
 		}
+
+		e.Values["input.body."+i.Name] = value
 	}
 }

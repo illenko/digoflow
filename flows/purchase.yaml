@@ -41,6 +41,19 @@ tasks:
         type: string
         value: "This is a description from input: {{ input.body.description }}"
 
+  - id: buildPayerDetails
+    type: digoflow.toJson
+    input:
+      - name: id
+        type: string
+        value: "{{ input.body.payer.id }}"
+      - name: name.first
+        type: string
+        value: "{{ input.body.payer.name.first }}"
+      - name: name.last
+        type: string
+        value: "{{ input.body.payer.name.last }}"
+
   - id: generateOrderId
     type: uuidGenerator
 
@@ -58,7 +71,7 @@ tasks:
         value: "Authorization: {{ input.body.paymentSystem.apiKey }}"
       - name: body.id
         type: string
-        value: "{{ output.generateOrderId.id }}"
+        value: "{{ output.generateOrderId.result }}"
       - name: body.card
         type: string
         value: "{{ input.body.card }}"

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/illenko/digoflow-protorype/internal/digoflow"
 	"github.com/illenko/digoflow-protorype/internal/task"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 
-	app, err := digoflow.NewApp("flows")
+	app, err := digoflow.NewApp("flows", "migrations")
 
 	if err != nil {
 		fmt.Printf("Error loading app: %v", err)
@@ -27,5 +28,5 @@ func main() {
 }
 
 func uuidGenerator(_ task.Input) (task.Output, error) {
-	return task.Output{"id": uuid.New().String()}, nil
+	return task.Output{"result": uuid.New().String()}, nil
 }

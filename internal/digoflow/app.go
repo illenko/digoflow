@@ -1,57 +1,105 @@
 package digoflow
 
 import (
+	"database/sql"
 	"fmt"
-	"github.com/illenko/digoflow-protorype/internal/core/entrypoint/http"
-	"github.com/illenko/digoflow-protorype/internal/task"
 	"os"
+	"path/filepath"
 	"slices"
 
 	"github.com/gin-gonic/gin"
 	"github.com/illenko/digoflow-protorype/internal/core"
+	"github.com/illenko/digoflow-protorype/internal/core/entrypoint/http"
+	"github.com/illenko/digoflow-protorype/internal/core/migration"
+	"github.com/illenko/digoflow-protorype/internal/task"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"gopkg.in/yaml.v2"
 )
 
 type App struct {
 	Flows map[string]core.Flow
-	Tasks map[string]task.ExecutionTask // type -> ExecutionTask
+	Tasks map[string]task.ExecutionTask
 }
 
-func NewApp(flowsDir string) (*App, error) {
-	files, err := os.ReadDir(flowsDir)
+func NewApp(flowsDir string, migrationsDir string) (*App, error) {
+	err := godotenv.Load()
+	if err != nil {
+		return nil, fmt.Errorf("error loading .env file: %w", err)
+	}
+
+	_, err = connectToDB(migrationsDir)
 	if err != nil {
 		return nil, err
 	}
 
-	app := App{
+	files, err := filepath.Glob(filepath.Join(flowsDir, "*.yaml"))
+	if err != nil {
+		return nil, fmt.Errorf("error reading directory: %w", err)
+	}
+
+	app := &App{
 		Flows: make(map[string]core.Flow),
 		Tasks: builtInTasks(),
 	}
 
 	for _, file := range files {
-		if !file.IsDir() {
-			data, err := os.ReadFile(flowsDir + "/" + file.Name())
-			if err != nil {
-				return nil, err
-			}
-
-			var flow core.Flow
-			err = yaml.Unmarshal(data, &flow)
-			if err != nil {
-				return nil, err
-			}
-
-			app.RegisterFlow(flow)
+		flow, err := readFlow(file)
+		if err != nil {
+			return nil, err
 		}
+		app.RegisterFlow(flow)
 	}
 
-	return &app, nil
+	return app, nil
+}
+
+func connectToDB(migrationsDir string) (*sql.DB, error) {
+	dbUrl := os.Getenv("DB_URL")
+	if dbUrl == "" {
+		return nil, nil
+	}
+
+	db, err := sql.Open("postgres", fmt.Sprintf("%s?user=%s&password=%s&sslmode=disable", dbUrl, os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD")))
+	if err != nil {
+		return nil, fmt.Errorf("error opening database: %w", err)
+	}
+
+	err = db.Ping()
+	if err != nil {
+		db.Close()
+		return nil, fmt.Errorf("error pinging database: %w", err)
+	}
+
+	err = migration.Execute(migrationsDir, db)
+	if err != nil {
+		db.Close()
+		return nil, fmt.Errorf("error executing migrations: %w", err)
+	}
+
+	return db, nil
+}
+
+func readFlow(filePath string) (core.Flow, error) {
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return core.Flow{}, err
+	}
+
+	var flow core.Flow
+	err = yaml.Unmarshal(data, &flow)
+	if err != nil {
+		return core.Flow{}, err
+	}
+
+	return flow, nil
 }
 
 func builtInTasks() map[string]task.ExecutionTask {
 	return map[string]task.ExecutionTask{
 		"digoflow.log":         task.Log,
 		"digoflow.httpRequest": task.HTTPRequest,
+		"digoflow.toJson":      task.ToJSON,
 	}
 }
 

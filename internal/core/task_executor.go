@@ -2,9 +2,9 @@ package core
 
 import (
 	"fmt"
+
 	"github.com/illenko/digoflow-protorype/internal/core/expression"
 	"github.com/illenko/digoflow-protorype/internal/task"
-	"strconv"
 )
 
 func ExecuteTasks(f Flow, e *Execution) (task.Output, error) {
@@ -43,14 +43,20 @@ func createTaskInput(t task.Config, e *Execution) (task.Input, error) {
 				return nil, fmt.Errorf("placeholder not found")
 			}
 
-			if inp.Type == "float" {
-				value = strconv.FormatFloat(value.(float64), 'f', -1, 64)
+			sValue, err := ConvertToString(value)
+
+			if err != nil {
+				return nil, err
 			}
 
-			replacement[p] = value.(string)
+			replacement[p] = sValue
 		}
 
-		realValue := expression.ReplacePlaceholders(inp.Value, replacement)
+		realValue, err := ConvertToType(inp.Type, expression.ReplacePlaceholders(inp.Value, replacement))
+
+		if err != nil {
+			return nil, err
+		}
 
 		taskInput[inp.Name] = realValue
 	}

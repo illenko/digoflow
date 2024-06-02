@@ -1,5 +1,4 @@
 services:
-
   mock-server:
     image: wiremock/wiremock:3.5.4
     container_name: mock-server
@@ -7,3 +6,12 @@ services:
       - ./wiremock:/home/wiremock
     ports:
       - "8000:8080"
+  payment-db:
+    image: postgres
+    container_name: database
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=payments_db
