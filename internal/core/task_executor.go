@@ -1,10 +1,10 @@
-package component
+package core
 
 import (
 	"fmt"
-
-	"github.com/illenko/digoflow-protorype/internal/component/task"
-	"github.com/illenko/digoflow-protorype/internal/expression"
+	"github.com/illenko/digoflow-protorype/internal/core/expression"
+	"github.com/illenko/digoflow-protorype/internal/task"
+	"strconv"
 )
 
 func ExecuteTasks(f Flow, e *Execution) (task.Output, error) {
@@ -44,7 +44,7 @@ func createTaskInput(t task.Config, e *Execution) (task.Input, error) {
 			}
 
 			if inp.Type == "float" {
-				value = fmt.Sprintf("%f", value)
+				value = strconv.FormatFloat(value.(float64), 'f', -1, 64)
 			}
 
 			replacement[p] = value.(string)

@@ -2,18 +2,18 @@ package digoflow
 
 import (
 	"fmt"
+	"github.com/illenko/digoflow-protorype/internal/core/entrypoint/http"
+	"github.com/illenko/digoflow-protorype/internal/task"
 	"os"
 	"slices"
 
 	"github.com/gin-gonic/gin"
-	"github.com/illenko/digoflow-protorype/internal/component"
-	"github.com/illenko/digoflow-protorype/internal/component/task"
-	"github.com/illenko/digoflow-protorype/internal/entrypoint/http"
+	"github.com/illenko/digoflow-protorype/internal/core"
 	"gopkg.in/yaml.v2"
 )
 
 type App struct {
-	Flows map[string]component.Flow
+	Flows map[string]core.Flow
 	Tasks map[string]task.ExecutionTask // type -> ExecutionTask
 }
 
@@ -24,7 +24,7 @@ func NewApp(flowsDir string) (*App, error) {
 	}
 
 	app := App{
-		Flows: make(map[string]component.Flow),
+		Flows: make(map[string]core.Flow),
 		Tasks: builtInTasks(),
 	}
 
@@ -35,7 +35,7 @@ func NewApp(flowsDir string) (*App, error) {
 				return nil, err
 			}
 
-			var flow component.Flow
+			var flow core.Flow
 			err = yaml.Unmarshal(data, &flow)
 			if err != nil {
 				return nil, err
@@ -55,7 +55,7 @@ func builtInTasks() map[string]task.ExecutionTask {
 	}
 }
 
-func (a *App) RegisterFlow(flow component.Flow) {
+func (a *App) RegisterFlow(flow core.Flow) {
 	a.Flows[flow.ID] = flow
 }
 
@@ -107,7 +107,7 @@ func (a *App) registerFlows(g *gin.Engine) ([]string, error) {
 	return entrypointTypes, nil
 }
 
-func (a *App) registerTasks(f *component.Flow) error {
+func (a *App) registerTasks(f *core.Flow) error {
 	for _, tc := range f.TaskConfigs {
 		t, ok := a.Tasks[tc.Type]
 

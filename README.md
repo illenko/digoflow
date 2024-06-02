@@ -1,3 +1,9 @@
+### Data types:
+* `string`
+* `int`
+* `float`
+* `bool`
+
 ### POST /purchase - Create a new purchase
 
 ```shell
@@ -7,18 +13,18 @@ curl --location 'localhost:8080/purchase' \
 --data '{
   "id": "123",
   "description": "Purchase description",
-  "resultUrl": "http://example.com/result",
-  "amount": {
-    "value": 100.0,
-    "currency": "USD"
-  },
+  "amount": 100.0,
   "card": "1234561234561234",
   "payer": {
     "id": "456",
     "name": {
-      "firstName": "John",
-      "lastName": "Doe"
+      "first": "John",
+      "last": "Doe"
     }
+  },
+  "paymentSystem": {
+    "url": "http://localhost:8000",
+    "apiKey": "test_api_key"
   }
 }'
 ```

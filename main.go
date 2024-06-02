@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/illenko/digoflow-protorype/internal/component/task"
 	"github.com/illenko/digoflow-protorype/internal/digoflow"
+	"github.com/illenko/digoflow-protorype/internal/task"
 )
 
 func main() {
