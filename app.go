@@ -1,4 +1,4 @@
-package digoflow_prototype
+package digoflow
 
 import (
 	"database/sql"
