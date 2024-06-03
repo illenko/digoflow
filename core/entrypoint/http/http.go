@@ -5,11 +5,11 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/illenko/digoflow-protorype/internal/task"
+	"github.com/illenko/digoflow/task"
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/illenko/digoflow-protorype/internal/core"
+	"github.com/illenko/digoflow/core"
 )
 
 func NewHandler(f core.Flow, g *gin.Engine) {

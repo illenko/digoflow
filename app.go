@@ -1,4 +1,4 @@
-package digoflow
+package digoflow_prototype
 
 import (
 	"database/sql"
@@ -7,11 +7,12 @@ import (
 	"path/filepath"
 	"slices"
 
+	"github.com/illenko/digoflow/core"
+	"github.com/illenko/digoflow/core/entrypoint/http"
+	"github.com/illenko/digoflow/core/migration"
+	"github.com/illenko/digoflow/task"
+
 	"github.com/gin-gonic/gin"
-	"github.com/illenko/digoflow-protorype/internal/core"
-	"github.com/illenko/digoflow-protorype/internal/core/entrypoint/http"
-	"github.com/illenko/digoflow-protorype/internal/core/migration"
-	"github.com/illenko/digoflow-protorype/internal/task"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"gopkg.in/yaml.v2"

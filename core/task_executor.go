@@ -3,8 +3,8 @@ package core
 import (
 	"fmt"
 
-	"github.com/illenko/digoflow-protorype/internal/core/expression"
-	"github.com/illenko/digoflow-protorype/internal/task"
+	"github.com/illenko/digoflow/core/expression"
+	"github.com/illenko/digoflow/task"
 )
 
 func ExecuteTasks(f Flow, e *Execution) (task.Output, error) {

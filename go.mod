@@ -1,4 +1,4 @@
-module github.com/illenko/digoflow-protorype
+module github.com/illenko/digoflow
 
 go 1.22.3
 

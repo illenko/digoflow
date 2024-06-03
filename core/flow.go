@@ -1,8 +1,8 @@
 package core
 
 import (
-	"github.com/illenko/digoflow-protorype/internal/core/entrypoint"
-	"github.com/illenko/digoflow-protorype/internal/task"
+	"github.com/illenko/digoflow/core/entrypoint"
+	"github.com/illenko/digoflow/task"
 )
 
 type Flow struct {
