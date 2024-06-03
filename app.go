@@ -3,11 +3,11 @@ package digoflow
 import (
 	"database/sql"
 	"fmt"
-	"github.com/illenko/digoflow/container"
 	"os"
 	"path/filepath"
 	"slices"
 
+	"github.com/illenko/digoflow/container"
 	"github.com/illenko/digoflow/task"
 
 	"github.com/gin-gonic/gin"
@@ -101,6 +101,7 @@ func builtInTasks() map[string]task.ExecutionTask {
 		"digoflow.log":         task.Log,
 		"digoflow.httpRequest": task.HTTPRequest,
 		"digoflow.toJson":      task.ToJSON,
+		"digoflow.sql":         task.SQL,
 	}
 }
 

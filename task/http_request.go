@@ -2,8 +2,9 @@ package task
 
 import (
 	"fmt"
-	"github.com/illenko/digoflow/container"
 	"strings"
+
+	"github.com/illenko/digoflow/container"
 
 	"github.com/go-resty/resty/v2"
 )
