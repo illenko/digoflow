@@ -1,5 +1,9 @@
 package task
 
+import (
+	"github.com/illenko/digoflow/container"
+)
+
 type Input map[string]any
 
 type Output map[string]any
@@ -17,4 +21,4 @@ type InputConfig struct {
 	Value string `yaml:"value"`
 }
 
-type ExecutionTask func(Input) (Output, error)
+type ExecutionTask func(*container.Container, Input) (Output, error)

@@ -1,4 +1,4 @@
-package core
+package digoflow
 
 import "github.com/google/uuid"
 

@@ -1,4 +1,4 @@
-package expression
+package digoflow
 
 import (
 	"testing"
@@ -31,7 +31,7 @@ func TestGetPlaceholders(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := GetPlaceholders(tc.expression)
+			result := getPlaceholders(tc.expression)
 			assert.Equal(t, tc.expected, result)
 		})
 	}
@@ -66,7 +66,7 @@ func TestReplacePlaceholders(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := ReplacePlaceholders(tc.expression, tc.values)
+			result := replacePlaceholders(tc.expression, tc.values)
 			assert.Equal(t, tc.expected, result)
 		})
 	}

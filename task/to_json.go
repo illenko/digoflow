@@ -2,9 +2,10 @@ package task
 
 import (
 	"github.com/Jeffail/gabs/v2"
+	"github.com/illenko/digoflow/container"
 )
 
-func ToJSON(input Input) (Output, error) {
+func ToJSON(_ *container.Container, input Input) (Output, error) {
 
 	jsonObj := gabs.New()
 

@@ -1,4 +1,4 @@
-package entrypoint
+package digoflow
 
 type Entrypoint struct {
 	Type   string            `yaml:"type"`

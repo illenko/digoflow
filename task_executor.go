@@ -1,9 +1,8 @@
-package core
+package digoflow
 
 import (
 	"fmt"
-
-	"github.com/illenko/digoflow/core/expression"
+	"github.com/illenko/digoflow/container"
 	"github.com/illenko/digoflow/task"
 )
 
@@ -14,7 +13,7 @@ func ExecuteTasks(f Flow, e *Execution) (task.Output, error) {
 			return nil, err
 		}
 
-		output, err := executeTask(&taskInput, f.ExecutionTasks[i])
+		output, err := executeTask(f.Container, &taskInput, f.ExecutionTasks[i])
 		if err != nil {
 			return nil, err
 		}
@@ -33,7 +32,7 @@ func createTaskInput(t task.Config, e *Execution) (task.Input, error) {
 	taskInput := make(task.Input)
 
 	for _, inp := range t.Input {
-		placeholders := expression.GetPlaceholders(inp.Value)
+		placeholders := getPlaceholders(inp.Value)
 
 		replacement := map[string]string{}
 
@@ -52,7 +51,7 @@ func createTaskInput(t task.Config, e *Execution) (task.Input, error) {
 			replacement[p] = sValue
 		}
 
-		realValue, err := ConvertToType(inp.Type, expression.ReplacePlaceholders(inp.Value, replacement))
+		realValue, err := ConvertToType(inp.Type, replacePlaceholders(inp.Value, replacement))
 
 		if err != nil {
 			return nil, err
@@ -64,6 +63,6 @@ func createTaskInput(t task.Config, e *Execution) (task.Input, error) {
 	return taskInput, nil
 }
 
-func executeTask(taskInput *task.Input, task task.ExecutionTask) (task.Output, error) {
-	return task(*taskInput)
+func executeTask(c *container.Container, taskInput *task.Input, task task.ExecutionTask) (task.Output, error) {
+	return task(c, *taskInput)
 }

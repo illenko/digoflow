@@ -2,6 +2,7 @@ package task
 
 import (
 	"fmt"
+	"github.com/illenko/digoflow/container"
 	"strings"
 
 	"github.com/go-resty/resty/v2"
@@ -10,7 +11,7 @@ import (
 var HttpClient = resty.New().SetDebug(true)
 
 // HTTPRequest is a task that sends an HTTP request
-func HTTPRequest(input Input) (Output, error) {
+func HTTPRequest(_ *container.Container, input Input) (Output, error) {
 	requestConfig, err := parseInput(input)
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-package http
+package digoflow
 
 import (
 	"fmt"
@@ -9,10 +9,9 @@ import (
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/illenko/digoflow/core"
 )
 
-func NewHandler(f core.Flow, g *gin.Engine) {
+func NewHttpHandler(f Flow, g *gin.Engine) {
 	config := f.Entrypoint.Config
 	fmt.Printf("registering HTTP entrypoint for %s \n", config["path"])
 
@@ -26,9 +25,9 @@ func NewHandler(f core.Flow, g *gin.Engine) {
 	}
 }
 
-func handleRequest(f core.Flow, body bool) gin.HandlerFunc {
+func handleRequest(f Flow, body bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		e := core.NewExecution(f.ID)
+		e := NewExecution(f.ID)
 
 		handlePathVariables(c, f, &e)
 		handleQueryParameters(c, f, &e)
@@ -38,7 +37,7 @@ func handleRequest(f core.Flow, body bool) gin.HandlerFunc {
 			handleBody(c, f, &e)
 		}
 
-		output, err := core.ExecuteTasks(f, &e)
+		output, err := ExecuteTasks(f, &e)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -51,7 +50,7 @@ func handleRequest(f core.Flow, body bool) gin.HandlerFunc {
 	}
 }
 
-func toResponse(c *gin.Context, output task.Output, e *core.Execution) {
+func toResponse(c *gin.Context, output task.Output, e *Execution) {
 	jsonObj := gabs.New()
 
 	for k, v := range output {
@@ -61,25 +60,25 @@ func toResponse(c *gin.Context, output task.Output, e *core.Execution) {
 	c.JSON(http.StatusOK, e)
 }
 
-func handlePathVariables(c *gin.Context, f core.Flow, e *core.Execution) {
+func handlePathVariables(c *gin.Context, f Flow, e *Execution) {
 	for _, i := range f.Input.PathVariables {
 		e.Values["input.path-variables."+i.Name] = c.Param(i.Name)
 	}
 }
 
-func handleQueryParameters(c *gin.Context, f core.Flow, e *core.Execution) {
+func handleQueryParameters(c *gin.Context, f Flow, e *Execution) {
 	for _, q := range f.Input.QueryParameters {
 		e.Values["input.query-parameters."+q.Name] = c.Query(q.Name)
 	}
 }
 
-func handleHeaders(c *gin.Context, f core.Flow, e *core.Execution) {
+func handleHeaders(c *gin.Context, f Flow, e *Execution) {
 	for _, h := range f.Input.Headers {
 		e.Values["input.headers."+h.Name] = c.GetHeader(h.Name)
 	}
 }
 
-func handleBody(c *gin.Context, f core.Flow, e *core.Execution) {
+func handleBody(c *gin.Context, f Flow, e *Execution) {
 	if f.Input.Body.Type == "json" {
 		handleJSONBody(c, f, e)
 	} else {
@@ -89,7 +88,7 @@ func handleBody(c *gin.Context, f core.Flow, e *core.Execution) {
 	}
 }
 
-func handleJSONBody(c *gin.Context, f core.Flow, e *core.Execution) {
+func handleJSONBody(c *gin.Context, f Flow, e *Execution) {
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -107,7 +106,7 @@ func handleJSONBody(c *gin.Context, f core.Flow, e *core.Execution) {
 	}
 
 	for _, i := range f.Input.Body.Fields {
-		value, err := core.ConvertToType(i.Type, bodyParsed.Path(i.Name).Data())
+		value, err := ConvertToType(i.Type, bodyParsed.Path(i.Name).Data())
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{

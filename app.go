@@ -3,24 +3,23 @@ package digoflow
 import (
 	"database/sql"
 	"fmt"
+	"github.com/illenko/digoflow/container"
 	"os"
 	"path/filepath"
 	"slices"
 
-	"github.com/illenko/digoflow/core"
-	"github.com/illenko/digoflow/core/entrypoint/http"
-	"github.com/illenko/digoflow/core/migration"
 	"github.com/illenko/digoflow/task"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 type App struct {
-	Flows map[string]core.Flow
-	Tasks map[string]task.ExecutionTask
+	Container *container.Container
+	Flows     map[string]Flow
+	Tasks     map[string]task.ExecutionTask
 }
 
 func NewApp(flowsDir string, migrationsDir string) (*App, error) {
@@ -29,7 +28,7 @@ func NewApp(flowsDir string, migrationsDir string) (*App, error) {
 		return nil, fmt.Errorf("error loading .env file: %w", err)
 	}
 
-	_, err = connectToDB(migrationsDir)
+	db, err := connectToDB(migrationsDir)
 	if err != nil {
 		return nil, err
 	}
@@ -40,8 +39,9 @@ func NewApp(flowsDir string, migrationsDir string) (*App, error) {
 	}
 
 	app := &App{
-		Flows: make(map[string]core.Flow),
-		Tasks: builtInTasks(),
+		Container: container.NewContainer(db),
+		Flows:     make(map[string]Flow),
+		Tasks:     builtInTasks(),
 	}
 
 	for _, file := range files {
@@ -72,7 +72,7 @@ func connectToDB(migrationsDir string) (*sql.DB, error) {
 		return nil, fmt.Errorf("error pinging database: %w", err)
 	}
 
-	err = migration.Execute(migrationsDir, db)
+	err = dbMigration(migrationsDir, db)
 	if err != nil {
 		db.Close()
 		return nil, fmt.Errorf("error executing migrations: %w", err)
@@ -81,16 +81,16 @@ func connectToDB(migrationsDir string) (*sql.DB, error) {
 	return db, nil
 }
 
-func readFlow(filePath string) (core.Flow, error) {
+func readFlow(filePath string) (Flow, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		return core.Flow{}, err
+		return Flow{}, err
 	}
 
-	var flow core.Flow
+	var flow Flow
 	err = yaml.Unmarshal(data, &flow)
 	if err != nil {
-		return core.Flow{}, err
+		return Flow{}, err
 	}
 
 	return flow, nil
@@ -104,7 +104,8 @@ func builtInTasks() map[string]task.ExecutionTask {
 	}
 }
 
-func (a *App) RegisterFlow(flow core.Flow) {
+func (a *App) RegisterFlow(flow Flow) {
+	flow.Container = a.Container
 	a.Flows[flow.ID] = flow
 }
 
@@ -144,7 +145,7 @@ func (a *App) registerFlows(g *gin.Engine) ([]string, error) {
 		}
 
 		if f.Entrypoint.Type == "http-handler" {
-			http.NewHandler(f, g)
+			NewHttpHandler(f, g)
 		}
 
 		if _, ok := seen[f.Entrypoint.Type]; !ok {
@@ -156,7 +157,7 @@ func (a *App) registerFlows(g *gin.Engine) ([]string, error) {
 	return entrypointTypes, nil
 }
 
-func (a *App) registerTasks(f *core.Flow) error {
+func (a *App) registerTasks(f *Flow) error {
 	for _, tc := range f.TaskConfigs {
 		t, ok := a.Tasks[tc.Type]
 

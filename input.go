@@ -1,4 +1,4 @@
-package core
+package digoflow
 
 type HttpInput struct {
 	PathVariables   []Variable `yaml:"path-variables"`

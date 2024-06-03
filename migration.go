@@ -1,4 +1,4 @@
-package migration
+package digoflow
 
 import (
 	"database/sql"
@@ -7,7 +7,7 @@ import (
 	"github.com/pressly/goose/v3"
 )
 
-func Execute(migrationsDir string, db *sql.DB) (err error) {
+func dbMigration(migrationsDir string, db *sql.DB) (err error) {
 
 	err = goose.SetDialect("postgres")
 	if err != nil {
