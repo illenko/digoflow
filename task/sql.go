@@ -2,10 +2,10 @@ package task
 
 import "github.com/illenko/digoflow/container"
 
-func SQL(c *container.Container, input Input) (Output, error) {
-	db := c.GetDB()
+type SQL struct{}
 
-	_, err := db.Exec(input["query"].(string))
+func (t *SQL) Execute(c *container.Container, input Input) (Output, error) {
+	_, err := c.Database.Exec(input["query"].(string))
 
 	if err != nil {
 		return nil, err

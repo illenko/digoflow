@@ -6,9 +6,10 @@ import (
 	"github.com/illenko/digoflow/container"
 )
 
-func Log(_ *container.Container, values Input) (Output, error) {
+type Log struct{}
 
-	for _, v := range values {
+func (t *Log) Execute(_ *container.Container, input Input) (Output, error) {
+	for _, v := range input {
 		fmt.Println(v)
 	}
 

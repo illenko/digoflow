@@ -14,7 +14,7 @@ func ExecuteTasks(f Flow, e *Execution) (task.Output, error) {
 			return nil, err
 		}
 
-		output, err := executeTask(f.Container, &taskInput, f.ExecutionTasks[i])
+		output, err := executeTask(f.Container, &taskInput, f.ExecTasks[i])
 		if err != nil {
 			return nil, err
 		}
@@ -64,6 +64,6 @@ func createTaskInput(t task.Config, e *Execution) (task.Input, error) {
 	return taskInput, nil
 }
 
-func executeTask(c *container.Container, taskInput *task.Input, task task.ExecutionTask) (task.Output, error) {
-	return task(c, *taskInput)
+func executeTask(c *container.Container, taskInput *task.Input, t task.Task) (task.Output, error) {
+	return t.Execute(c, *taskInput)
 }

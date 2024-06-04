@@ -4,21 +4,19 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/illenko/digoflow/container"
-
 	"github.com/go-resty/resty/v2"
+	"github.com/illenko/digoflow/container"
 )
 
-var HttpClient = resty.New().SetDebug(true)
+type HttpRequest struct{}
 
-// HTTPRequest is a task that sends an HTTP request
-func HTTPRequest(_ *container.Container, input Input) (Output, error) {
+func (t *HttpRequest) Execute(c *container.Container, input Input) (Output, error) {
 	requestConfig, err := parseInput(input)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := executeRequest(requestConfig)
+	response, err := executeRequest(c.HttpClient, requestConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -84,11 +82,11 @@ func parseInput(input Input) (httpRequestConfig, error) {
 }
 
 // executeRequest executes the HTTP request
-func executeRequest(config httpRequestConfig) (Output, error) {
+func executeRequest(client *resty.Client, config httpRequestConfig) (Output, error) {
 	response := map[string]any{}
 	errorResponse := map[string]any{}
 
-	resp, err := HttpClient.R().
+	resp, err := client.R().
 		SetHeaders(config.headers).
 		SetQueryParams(config.queryParams).
 		SetBody(config.body).

@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"slices"
 
+	"github.com/go-resty/resty/v2"
+
 	"github.com/illenko/digoflow/container"
 	"github.com/illenko/digoflow/task"
 
@@ -19,7 +21,7 @@ import (
 type App struct {
 	Container *container.Container
 	Flows     map[string]Flow
-	Tasks     map[string]task.ExecutionTask
+	Tasks     map[string]task.Task
 }
 
 func NewApp(flowsDir string, migrationsDir string) (*App, error) {
@@ -38,8 +40,10 @@ func NewApp(flowsDir string, migrationsDir string) (*App, error) {
 		return nil, fmt.Errorf("error reading directory: %w", err)
 	}
 
+	httpClient := resty.New().SetDebug(true)
+
 	app := &App{
-		Container: container.NewContainer(db),
+		Container: container.NewContainer(db, httpClient),
 		Flows:     make(map[string]Flow),
 		Tasks:     builtInTasks(),
 	}
@@ -96,12 +100,12 @@ func readFlow(filePath string) (Flow, error) {
 	return flow, nil
 }
 
-func builtInTasks() map[string]task.ExecutionTask {
-	return map[string]task.ExecutionTask{
-		"digoflow.log":         task.Log,
-		"digoflow.httpRequest": task.HTTPRequest,
-		"digoflow.toJson":      task.ToJSON,
-		"digoflow.sql":         task.SQL,
+func builtInTasks() map[string]task.Task {
+	return map[string]task.Task{
+		"digoflow.log":         &task.Log{},
+		"digoflow.httpRequest": &task.HttpRequest{},
+		"digoflow.toJson":      &task.ToJson{},
+		"digoflow.sql":         &task.SQL{},
 	}
 }
 
@@ -110,8 +114,8 @@ func (a *App) RegisterFlow(flow Flow) {
 	a.Flows[flow.ID] = flow
 }
 
-func (a *App) RegisterTask(taskType string, task task.ExecutionTask) {
-	a.Tasks[taskType] = task
+func (a *App) RegisterTask(taskType string, t task.Task) {
+	a.Tasks[taskType] = t
 }
 
 func (a *App) Start() error {
@@ -166,7 +170,7 @@ func (a *App) registerTasks(f *Flow) error {
 			return fmt.Errorf("task not found: %s", tc.ID)
 		}
 
-		f.ExecutionTasks = append(f.ExecutionTasks, t)
+		f.ExecTasks = append(f.ExecTasks, t)
 	}
 	return nil
 }

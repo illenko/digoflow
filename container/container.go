@@ -1,15 +1,19 @@
 package container
 
-import "database/sql"
+import (
+	"database/sql"
+
+	"github.com/go-resty/resty/v2"
+)
 
 type Container struct {
-	db *sql.DB
+	Database   *sql.DB
+	HttpClient *resty.Client
 }
 
-func NewContainer(db *sql.DB) *Container {
-	return &Container{db: db}
-}
-
-func (c *Container) GetDB() *sql.DB {
-	return c.db
+func NewContainer(db *sql.DB, httpClient *resty.Client) *Container {
+	return &Container{
+		Database:   db,
+		HttpClient: httpClient,
+	}
 }
